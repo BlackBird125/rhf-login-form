@@ -29,6 +29,7 @@ export const SearchForm = () => {
   const onSubmit = (data: SearchFormData) => {
     console.log("Search submitted:", data);
     // ここで実際の検索処理を実装
+    alert("検索しました");
   };
 
   return (

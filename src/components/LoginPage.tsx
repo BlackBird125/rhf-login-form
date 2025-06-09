@@ -21,6 +21,7 @@ export const LoginPage = () => {
 
   const onSubmit = (data: LoginFormData) => {
     console.log(data);
+    alert("ログインしました");
   };
 
   return (
