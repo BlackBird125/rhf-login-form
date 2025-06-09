@@ -1,82 +1,79 @@
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type LoginInputs = {
-  username: string;
-  password: string;
-};
+const loginSchema = z.object({
+  username: z.string().min(1, "ユーザー名を入力してください"),
+  password: z.string().min(8, "パスワードは8文字以上で入力してください"),
+});
 
-export const LoginPage: React.FC = () => {
+type LoginFormData = z.infer<typeof loginSchema>;
+
+export const LoginPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInputs>();
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+  const onSubmit = (data: LoginFormData) => {
     console.log(data);
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          ログイン
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{ mt: 3 }}
-          noValidate
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="ユーザー名"
-            autoComplete="username"
-            autoFocus
-            {...register("username", { required: "ユーザー名は必須です" })}
-            error={!!errors.username}
-            helperText={errors.username?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="password"
-            label="パスワード"
-            type="password"
-            autoComplete="current-password"
-            {...register("password", {
-              required: "パスワードは必須です",
-              minLength: {
-                value: 6,
-                message: "パスワードは6文字以上で入力してください",
-              },
-            })}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">ログイン</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
           >
-            ログイン
-          </Button>
-        </Box>
-      </Box>
-    </Container>
+            ユーザー名
+          </label>
+          <input
+            type="text"
+            id="username"
+            {...register("username")}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.username.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            パスワード
+          </label>
+          <input
+            type="password"
+            id="password"
+            {...register("password")}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          ログイン
+        </button>
+      </form>
+    </div>
   );
 };
